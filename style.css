@@ -1,0 +1,137 @@
+:root{
+  --sidebar-width:280px; --toc-width:260px; --content-max:1280px;
+  --bg:#fff; --fg:#111; --muted:#6c757d;
+  --border:rgba(0,0,0,.08); --code:rgba(0,0,0,.05);
+  --accent:rgba(13,110,253,.12); --accent2:rgba(25,135,84,.12);
+  --header:rgba(255,255,255,.85);
+  --card-w: 520px;      /* 每张卡片的固定宽度（桌面端） */
+  --card-img-h: 320px;  /* 图片展示区域固定高度（不裁切） */
+  --card-gap-row: 3rem; /* 行间距 */
+  --card-gap-col: 6rem; /* 列间距 */
+}
+html[data-theme="dark"]{
+  --bg:#0f1115; --fg:#e6e6e6; --muted:#9aa4b2;
+  --border:rgba(255,255,255,.12); --code:rgba(255,255,255,.06);
+  --accent:rgba(66,153,225,.15); --accent2:rgba(72,187,120,.15);
+  --header:rgba(15,17,21,.85);
+  color-scheme:dark;
+}
+
+/* 基础布局与排版 */
+html,body{height:100%;background:var(--bg);color:var(--fg)}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";line-height:1.6}
+.layout{display:grid;grid-template-columns:var(--sidebar-width) 1fr var(--toc-width);min-height:100vh}
+.sidebar-primary,.sidebar-secondary{position:sticky;top:0;height:100vh;overflow-y:auto;padding:1rem}
+.sidebar-primary{border-right:1px solid var(--border)}
+.sidebar-secondary{border-left:1px solid var(--border)}
+.content-wrap{max-width:var(--content-max);width:100%;margin:0 auto;padding:2rem 2rem 6rem}
+.page-header{display:flex;justify-content:space-between;align-items:center;gap:.75rem;padding:.75rem 1rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--header);backdrop-filter:blur(6px);z-index:10}
+.doc-title{margin:0;font-size:1.1rem;font-weight:600}
+.btn-icon{border:0;background:transparent;padding:.4rem .5rem;border-radius:.5rem;color:var(--fg)}
+.btn-icon:hover{background:var(--code)}
+.bd-sidenav a,.toc a{display:block;padding:.2rem .25rem;text-decoration:none;color:inherit;border-radius:.3rem}
+.bd-sidenav a.active{background:var(--accent)}
+.toc a.active{background:var(--accent2)}
+#backToTop{position:fixed;right:1rem;bottom:1rem;display:none;z-index:50}
+pre{background:var(--code);padding:.75rem;border-radius:.5rem;overflow:auto}
+pre code{white-space:pre-wrap}
+img{max-width:100%;height:auto}
+a{color:#1f6feb}
+html[data-theme="dark"] a{color:#76a9ff}
+@media (max-width:1200px){.layout{grid-template-columns:1fr}.sidebar-primary,.sidebar-secondary{display:none}}
+
+/* 语言显隐 */
+[data-lang="en"] #sideNav .nav-zh{display:none}
+[data-lang="zh"] #sideNav .nav-en{display:none}
+[data-lang="en"] .lang-zh,
+[data-lang="zh"] .lang-en{display:none}
+.lang-tag{font-size:.8rem;color:var(--muted);margin-left:.4rem}
+
+
+
+/* 两列，列宽固定为 --card-w，整体居中 */
+.posts-grid{
+  display: grid;
+  grid-template-columns: repeat(2, var(--card-w));
+  justify-content: center;                 /* 让两列在容器中居中 */
+  gap: var(--card-gap-row) var(--card-gap-col);
+  margin-top: 2rem;
+}
+
+/* 卡片：无边框、固定宽度、垂直排版、内容居中 */
+.card{
+  width: var(--card-w);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem 1rem 1.25rem;
+  border: none;        /* 去掉边框 */
+  box-shadow: none;    /* 如果有阴影也去掉 */
+  background: transparent; /* 可选：去掉背景色，纯透明 */
+  color:var(--fg);
+}
+
+/* 图片容器：固定高度，不裁切；图片自适应缩放并居中 */
+.card .image {
+  display: flex;               /* 用 flex 居中 */
+  justify-content: center;     /* 水平居中 */
+  align-items: center;         /* 垂直居中 */
+  width: 500px;
+  height: 500px;               /* 固定容器高度 (可调，比如 300/400px) */
+  /*overflow: hidden;*/            /* 防止溢出 */
+  background: transparent;
+}
+
+.card .image img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;         /* 保证完整显示，不裁切 */
+  display: block;
+}
+
+/* 图片填满父容器（保持比例、不裁切），且不受全局 max- 限制 */
+.img-fill {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+}
+
+
+.img-dark { display: none !important; }
+[data-theme="dark"] .img-light { display: none !important; }
+[data-theme="dark"] .img-dark  { display: block !important; }
+
+
+/* 标题与描述：简单居中 */
+.card h3{ margin: .75rem 0 .25rem; font-weight: 700; font-family:"KaiTi","STKaiti","楷体","Times New Roman",serif; color:inherit;}
+.card h3 a{ display: inline-block; text-align: center; font-family:"KaiTi","STKaiti","楷体","Times New Roman",serif; color:inherit;}
+.card p{
+  margin: 0 0 .75rem;
+  font-family:"KaiTi","STKaiti","楷体","Times New Roman",serif;
+  font-size:1.3rem; line-height:1; text-align:center;
+  color:inherit;
+}
+
+
+.poem{
+  font-family:"KaiTi","STKaiti","楷体",serif;
+  font-size:1.5rem; line-height:1; text-align:center;
+  display:flex; flex-direction:column; justify-content:center; align-items:center;
+}
+.poem-source{
+  font-family:"SimHei","Microsoft YaHei","黑体",sans-serif;
+  font-size:1.2rem; text-align:right; width:100%; margin-top:.5rem;
+}
+
+
+/* 响应式：小屏改为单列，卡片宽度自动收缩 */
+@media (max-width: 1100px){
+  :root{ --card-w: min(520px, calc(100vw - 4rem)); }
+  .posts-grid{ grid-template-columns: 1fr; gap: 2rem; }
+  .card{ width: 100%; }
+}
