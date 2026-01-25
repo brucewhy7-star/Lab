@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Anchor's Home</title>
+
+        <!-- Theme BEFORE paint (prevents flash) -->
+        <script>
+            (function () {
+            var savedTheme = localStorage.getItem("theme") || "dark";
+            document.documentElement.setAttribute("data-theme", savedTheme);
+            })();
+        </script>
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+        <link rel="stylesheet" href="../../../style.css" />
+
+        <!-- MathJax (always typeset the whole page) -->
+        <script>
+            window.MathJax = {
+            loader: { load: ["[tex]/ams", "[tex]/color", "[tex]/textmacros"] },
+            tex: {
+                packages: { "[+]": ["ams", "color", "textmacros"] },
+                inlineMath: [["\\(", "\\)"]],
+                displayMath: [["\\[", "\\]"]],
+                tags: "ams",
+                processEscapes: true
+            },
+            options: {
+                skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+            }
+            };
+        </script>
+        <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+
+        <!-- Page helpers: theme toggle + TOC + scroll highlight + back-to-top -->
+        <script>
+            (function () {
+            function applyTheme(mode) {
+                document.documentElement.setAttribute("data-theme", mode);
+                localStorage.setItem("theme", mode);
+            }
+
+            // Keep these because your header buttons call them
+            window.__setLight = function () { applyTheme("light"); };
+            window.__setDark  = function () { applyTheme("dark"); };
+
+            document.addEventListener("DOMContentLoaded", () => {
+                // MathJax: typeset whole document once
+                if (window.MathJax) MathJax.typesetPromise();
+
+                rebuildPageToc();
+                observeHeadings();
+                setupBackToTop();
+            });
+
+            function slugify(text) {
+                return text.toLowerCase().trim()
+                .replace(/[^a-z0-9\u4e00-\u9fa5\s-]/g, "")
+                .replace(/\s+/g, "-")
+                .replace(/-+/g, "-");
+            }
+
+            function ensureId(el) {
+                if (!el.id) el.id = slugify(el.textContent);
+                return el.id;
+            }
+
+            function rebuildPageToc() {
+                const toc = document.querySelector("#pageToc");
+                const scope = document.querySelector("main.content-wrap") || document.body;
+                if (!toc) return;
+
+                toc.innerHTML = "";
+                const hs = Array.from(scope.querySelectorAll("h1, h2, h3"));
+                hs.forEach(h => ensureId(h));
+
+                const ul = document.createElement("ul");
+                ul.className = "list-unstyled toc";
+
+                hs.forEach(h => {
+                const li = document.createElement("li");
+                li.style.marginLeft = (h.tagName === "H1" ? 0 : h.tagName === "H2" ? 12 : 24) + "px";
+
+                const a = document.createElement("a");
+                a.href = "#" + h.id;
+                a.textContent = h.textContent;
+
+                li.appendChild(a);
+                ul.appendChild(li);
+                });
+
+                toc.appendChild(ul);
+            }
+
+            function observeHeadings() {
+                const headings = document.querySelectorAll(".content-wrap h1, .content-wrap h2, .content-wrap h3");
+                if (!headings.length) return;
+
+                const observer = new IntersectionObserver((entries) => {
+                const links = Array.from(document.querySelectorAll(".toc a, .bd-sidenav a"));
+                const map = new Map(links.map(a => [a.getAttribute("href"), a]));
+
+                entries.forEach(entry => {
+                    const id = "#" + entry.target.id;
+                    const link = map.get(id);
+                    if (!link) return;
+
+                    if (entry.isIntersecting) link.classList.add("active");
+                    else link.classList.remove("active");
+                });
+                }, { rootMargin: "0px 0px -70% 0px", threshold: 0.1 });
+
+                headings.forEach(h => observer.observe(h));
+            }
+
+            function setupBackToTop() {
+                const btn = document.getElementById("backToTop");
+                if (!btn) return;
+
+                window.addEventListener("scroll", () => {
+                btn.style.display = (window.scrollY > 400) ? "block" : "none";
+                });
+
+                btn.addEventListener("click", () => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                });
+            }
+            })();
+        </script>
+    </head>
+
+    <body>
+        <!--顶部-->
+        <header class="page-header">
+            <h1 class="doc-title m-0"><a class="nav-link" href="../../index.html">Anchor's Home</a></h1>
+
+            <div class="d-flex align-items-center gap-1">
+                <div class="btn-group me-1" role="group" aria-label="Theme">
+                    <button class="btn-icon" type="button" onclick="__setLight()" title="Light mode" aria-label="Switch to light mode">
+                        <i class="fa-solid fa-sun" aria-hidden="true"></i>
+                    </button>
+                    <button class="btn-icon" type="button" onclick="__setDark()" title="Dark mode" aria-label="Switch to dark mode">
+                        <i class="fa-solid fa-moon" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="layout">
+            <!--侧边栏-->
+            <aside class="sidebar-primary">
+                <nav aria-label="Chapters" id="sideNav">
+                    <!-- 英文列表 -->
+                    <ul class="list-unstyled bd-sidenav nav-en">
+                        <li><a class="nav-link" href="../../../index.html">Back to Homepage</a></li>
+                        <li><a class="nav-link" href="../Small_Anchor.html">Small Anchor</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!--主体内容-->
+            <main class="content-wrap">
+                <h1 id="exponential-functions">Exponential Functions</h1>
+                <h2 id="definitions">definitions</h2>
+                <div class="definition*">
+                <p><strong>Definition 1</strong>. <strong>(Exponential
+                Functions)</strong></p>
+                <p>We call functions like <span class="math inline">\(y = a b^x (b
+                &gt;0)\)</span> exponential functions. <strong>Its domain is all the
+                real numbers</strong>, and <strong>its range is <span
+                class="math inline">\((0, +\infty) (y&gt;0)\)</span></strong>.</p>
+                <p>Specifically</p>
+                <ul>
+                <li><p>if <span class="math inline">\(a&gt;0, 0&lt;b&lt;1\)</span>, we
+                call it exponential <strong>decay</strong> functions, and say <span
+                class="math inline">\(b\)</span> is the <strong>decay
+                factor</strong>;</p></li>
+                <li><p>if <span class="math inline">\(a&gt;0, b&gt;1\)</span>, we call
+                it exponential <strong>growth</strong> functions, and say <span
+                class="math inline">\(b\)</span> is the <strong>growth
+                factor</strong></p></li>
+                </ul>
+                </div>
+                <p>Consider two simple exponential functions: <span
+                class="math inline">\(y = 2^x, y = \left( \frac{1}{2}\right)
+                ^x\)</span>:</p>
+                <figure data-latex-placement="h">
+                <img src="1.png" style="width:80.0%" />
+                </figure>
+                <p>As we can see:</p>
+                <ul>
+                <li><p><span class="math inline">\(y=2^x\)</span> <strong>rises</strong>
+                from left to right, while <span class="math inline">\(y = \left(
+                \frac{1}{2}\right)^x\)</span> <strong>falls</strong> from left to
+                right,</p></li>
+                <li><p><strong>Both of them pass the point</strong> <span
+                class="math inline">\((0, 1)\)</span>,</p></li>
+                <li><p><span class="math inline">\(y=2^x\)</span> pass <span
+                class="math inline">\((1, 2)\)</span>, and <span class="math inline">\(y
+                = \left( \frac{1}{2}\right)^x\)</span> pass <span
+                class="math inline">\(1, \frac{1}{2}\)</span> (<strong>Generally, <span
+                class="math inline">\((1, b)\)</span></strong>).</p></li>
+                </ul>
+                <div class="definition*">
+                <p><strong>Definition 2</strong>. <strong>(Asymptote)</strong></p>
+                <p>An asymptote is a line which that a graph <strong>approaches more and
+                more closely</strong>.</p>
+                </div>
+                <p>According to the defintion of asympotote and the graph of <span
+                class="math inline">\(y = b^x\)</span>, we find that:</p>
+                <div class="theorem*">
+                <p><strong>Theorem 1</strong>. The asymptote of <span
+                class="math inline">\(y = b^x\)</span> is <span class="math inline">\(y
+                = 0\)</span>.</p>
+                </div>
+                <h2 id="graph-y-a-bx-h-k">Graph <span class="math inline">\(y = a
+                b^{(x-h)} +k\)</span></h2>
+                <p><em>pass</em></p>
+                <h2 id="applications">Applications</h2>
+                <div class="definition*">
+                <p><strong>Definition 3</strong>. <strong>(Exponential Growth
+                Model)</strong></p>
+                <p><span class="math display">\[\begin{equation*}
+                            y = a (1 + r)^t
+                \end{equation*}\]</span></p>
+                <p>Examples of exponential growth in real life include: bank account
+                balance, Spread of Infectious Diseases (Early Stage) etc.</p>
+                </div>
+                <div class="definition*">
+                <p><strong>Definition 4</strong>. <strong>(Exponential Decay
+                Model)</strong></p>
+                <p><span class="math display">\[\begin{equation*}
+                            y = a (1 - r)^t
+                \end{equation*}\]</span></p>
+                <p>Examples of exponential decay in real life include: Radioactive
+                Decay, depreciation etc.</p>
+                </div>
+                <div class="definition*">
+                <p><strong>Definition 5</strong>. <strong>(Compound
+                Interest)</strong></p>
+                <p><span class="math display">\[\begin{equation*}
+                            A = P \left( 1 + \frac{r}{n}\right) ^{nt}
+                \end{equation*}\]</span></p>
+                <p>Here, <span class="math inline">\(P\)</span>-principal (initial
+                amount of money), <span class="math inline">\(r\)</span>-annual rate,
+                <span class="math inline">\(n\)</span>-times compounded in a year (or
+                other period), <span class="math inline">\(t\)</span>-time, usually
+                year.</p>
+                </div>
+                <h1 id="the-number-e">The Number <span
+                class="math inline">\(e\)</span></h1>
+                <p>First thing first, <span class="math inline">\(e\)</span> is
+                <strong>a number</strong>, its value is approximately <span
+                class="math inline">\(2.71828\dots\)</span> (just like <span
+                class="math inline">\(\pi\)</span> just represents a number which is
+                <span class="math inline">\(3.1415926\dots\)</span>).</p>
+                <p>Consider a sequence <span class="math inline">\(\{\left( 1 +
+                \frac{1}{n} \right) ^ n\}\)</span>: <span class="math display">\[\left(
+                1 + \frac{1}{1} \right) ^ 1, \left( 1 + \frac{1}{2} \right) ^ 2, \left(
+                1 + \frac{1}{3} \right) ^ 3, \cdots, \left( 1 + \frac{1}{n} \right) ^
+                n,\cdots\]</span> If we go to evaluate the value of each item in this
+                sequence, we will find that <strong>as <span
+                class="math inline">\(n\)</span> gets bigger, the value of the items
+                will get more and more closer to the value of number <span
+                class="math inline">\(e\)</span></strong>.</p>
+                <div class="definition*">
+                <p><strong>Definition 6</strong>. <strong>(continuously componded
+                interest)</strong></p>
+                <p>We’ve seen formula for componded interest: <span
+                class="math display">\[\begin{equation*}
+                            A = P \left( 1 + \frac{r}{n}\right) ^{nt}
+                \end{equation*}\]</span> <strong>What if <span
+                class="math inline">\(n\)</span> get infinitely large?</strong> It turns
+                out, it will be: <span class="math display">\[\begin{equation*}
+                            A = Pe^{rt}
+                \end{equation*}\]</span></p>
+                </div>
+                <h1 id="logarithmic-functions">Logarithmic Functions</h1>
+                <h2 id="definition">definition</h2>
+                <p>We know that <span class="math inline">\(2^5 = 32\)</span>, what if
+                we were facing such a question: <strong>what is the index, if the base
+                number is 2, and the outcome is 32?</strong> The answer is <span
+                class="math inline">\(5\)</span>, of course, but based on this we have
+                some new ideas:</p>
+                <div class="definition*">
+                <p><strong>Definition 7</strong>. <strong>(Logrithm of Base
+                B)</strong></p>
+                <p><span class="math display">\[\begin{equation*}
+                            b^a = c \Leftrightarrow \log_{b}(c) = a
+                \end{equation*}\]</span></p>
+                </div>
+                <p><strong>So, when we are evaluating things like: <span
+                class="math inline">\(\log_{3}(27)\)</span>, we are asking such a
+                question: <span class="math inline">\(3\)</span> to what power gives
+                27.</strong></p>
+                <p>Some common notations (and you can see them in your calculator):
+                <span class="math display">\[\begin{equation*}
+                        \log(c) = \log_{10}(c)\qquad \ln(c) = \log_{3}(c)
+                \end{equation*}\]</span></p>
+                <h2 id="properties">Properties</h2>
+                <p>There are some common properties about logrithm: <span
+                class="math display">\[\begin{align*}
+                        &amp;\log_{b}(1) = 0 &amp;b^0 = 1\\
+                        &amp;\log_{b}(b) = 1 &amp;b^1 = b\\
+                        &amp;b^{\log_{b}(c)} = c &amp;\text{Think about the definition
+                of logrithm}\\
+                        &amp;\log_{b}(mn) = \log_{b}(m) + \log_{b}(n) &amp;b^j = m, b^k
+                = n, b^j \cdot b^k = b^{j+k} = mn\\
+                        &amp;\log_{b}(\frac{m}{n}) = \log_{b}(m) - \log_{b}(n) &amp;b^j
+                = m, b^k = n, \frac{b^j}{b^k} = b^{j-k} =  \frac{m}{n}\\
+                        &amp;\log_{b}(m^n) = n\log_{b}(m) &amp; b^j = m, (b^j) ^n =
+                b^{nj} = b^{n\log_{b}(m)} = m^n
+                \end{align*}\]</span></p>
+                <p>And there are one especially important property:</p>
+                <div class="theorem*">
+                <p><strong>Theorem 2</strong>. <strong>(Change of Base
+                Formula)</strong></p>
+                <p><span class="math display">\[\begin{equation*}
+                            \log_{a}(c) = \frac{\log_{b}(c)}{\log_{b}(a)}
+                \end{equation*}\]</span></p>
+                </div>
+                <h2 id="logarithmic-functions-1">Logarithmic Functions</h2>
+                <div class="definition*">
+                <p><strong>Definition 8</strong>. <strong>(Logarithmic
+                Function)</strong> We call functions like: <span
+                class="math display">\[\begin{equation*}
+                            y = \log_{b}(x) \quad(b&gt;0)
+                \end{equation*}\]</span> <strong>The domain of it is <span
+                class="math inline">\(x &gt; 0\)</span></strong>, and <strong>the range
+                of it is all the real numbers</strong>.</p>
+                </div>
+                <p>If you give a number, say <span class="math inline">\(j\)</span> to
+                be the index you can get a number: <span class="math inline">\(b^j =
+                k\)</span>, this is how we use the exponential function. Reversely, if
+                you give the number which is the outcome <span
+                class="math inline">\(k\)</span> to the logarithm of base <span
+                class="math inline">\(b\)</span>, it give you the index i.e. <span
+                class="math inline">\(\log_{b}(k) = j\)</span>. So, <strong>The
+                logarithmic function is the inverse function of the exponential function
+                with the same base number</strong>. We can also verify this by the
+                definition of inverse functions.</p>
+                <p>Thus, using the property of symmetric about <span
+                class="math inline">\(y=x\)</span>, we can draw the graph of logarithmic
+                functions:</p>
+                <figure data-latex-placement="h">
+                <img src="2.png" style="width:50.0%" />
+                </figure>
+                <figure data-latex-placement="h">
+                <img src="3.png" style="width:60.0%" />
+                </figure>
+                <p>Notice that, <strong>for function <span class="math inline">\(y =
+                \log_{b}(x)\)</span>, it must pass <span
+                class="math inline">\((1,0)\)</span> and <span
+                class="math inline">\((b,1)\)</span></strong>. And point <span
+                class="math inline">\((b^2, 2)\)</span>.</p>
+                <h2 id="how-to-graph-y-log_bx-hk">How to Graph <span
+                class="math inline">\(y = \log_{b}(x-h)+k\)</span></h2>
+                <p><em>pass</em></p>
+            </main>
+
+            <aside class="sidebar-secondary">
+                <div class="toc-title"><i class="fa-solid fa-list"></i> Contents</div>
+                <nav aria-label="On this page" id="pageToc"></nav>
+            </aside>
+
+            <button class="btn btn-primary rounded-pill" id="backToTop">
+            <i class="fa-solid fa-arrow-up"></i> Back to top
+            </button>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        </div>
+    </body>
+</html>
